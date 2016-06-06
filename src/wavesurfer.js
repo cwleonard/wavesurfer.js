@@ -186,12 +186,18 @@ var WaveSurfer = {
         if (paused) {
             this.params.scrollParent = false;
         }
+        var schedPause = this.backend.scheduledPause;
         this.backend.seekTo(progress * this.getDuration());
         this.drawer.progress(this.backend.getPlayedPercents());
 
         if (!paused) {
             this.backend.pause();
-            this.backend.play();
+            if (schedPause != null) {
+                var startPos = this.backend.startPosition;
+                this.backend.play(startPos, schedPause);
+            } else {
+                this.backend.play();
+            }
         }
         this.params.scrollParent = oldScrollParent;
         this.fireEvent('seek', progress);
